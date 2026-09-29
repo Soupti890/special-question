@@ -685,15 +685,31 @@
         } else {  
           datePopover.classList.add('show');  
           dateBox.classList.add('active');  
-        }  
-      } else if (type === 'time') {  
-        const isShown = timePopover.classList.contains('show');  
-        datePopover.classList.remove('show');  
-        dateBox.classList.remove('active');  
-  
-        if (isShown) {  
-          timePopover.classList.remove('show');  
-          timeBox.classList.remove('active');  
+        }    
+        } else if (type === 'time') {
+    const isShown = timePopover.classList.contains('show');
+
+    datePopover.classList.remove('show');
+    dateBox.classList.remove('active');
+
+    if (isShown) {
+        timePopover.classList.remove('show');
+        timeBox.classList.remove('active');
+    }
+      } else if (type === 'time') {
+    const isShown = timePopover.classList.contains('show');
+
+    datePopover.classList.remove('show');
+    dateBox.classList.remove('active');
+
+    if (isShown) {
+        // Close time picker
+        timePopover.classList.remove('show');
+        timeBox.classList.remove('active');
+    } else {
+        // Open time picker
+        timePopover.classList.add('show');
+        timeBox.classList.add('active');
         }
       }
     }
