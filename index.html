@@ -1,720 +1,709 @@
-<!DOCTYPE html>  <html lang="en">  
-<head>  
-  <meta charset="UTF-8" />  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />  
-  <title>A Special Question for You ❤️</title>  
-  <!-- Google Fonts & Canvas Confetti -->  
-  <link rel="preconnect" href="https://fonts.googleapis.com">  
-  <link rel="preconnect" href="https://fonts.gstatic.com">  
-  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@600;700;800&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">  
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>    <style>  
-    * {  
-      box-sizing: border-box;  
-      margin: 0;  
-      padding: 0;  
-    }  
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>A Special Question for You ❤️</title>
   
-    body {  
-      min-height: 100vh;  
-      font-family: 'Quicksand', sans-serif;  
-      background: #fbf8f8;  
-      display: flex;  
-      justify-content: center;  
-      align-items: center;  
-      overflow-x: hidden;  
-      position: relative;  
-      padding: 20px;  
-    }  
-  
-    /* Floating rising hearts canvas */  
-    #heartCanvas {  
-      position: fixed;  
-      top: 0;  
-      left: 0;  
-      width: 100vw;  
-      height: 100vh;  
-      pointer-events: none;  
-      z-index: 1;  
-    }  
-  
-    /* Clean minimal screen container */  
-    .card {  
-      background: transparent;  
-      width: 100%;  
-      max-width: 680px;  
-      text-align: center;  
-      position: relative;  
-      z-index: 10;  
-    }  
-  
-    /* Sticker container */  
-    .sticker-container {  
-      display: flex;  
-      justify-content: center;  
-      align-items: center;  
-      margin: 0 auto 14px;  
-    }  
-  
-    .sticker {  
-      width: 110px;  
-      height: 110px;  
-      object-fit: contain;  
-      filter: drop-shadow(0 4px 10px rgba(255, 77, 109, 0.2));  
-      animation: bounceSoft 2.4s ease-in-out infinite;  
-      display: block;  
-    }  
-  
-    @keyframes bounceSoft {  
-      0%, 100% { transform: translateY(0); }  
-      50% { transform: translateY(-7px); }  
-    }  
-  
-    /* Step display transition */  
-    .step {  
-      display: none;  
-      animation: fadeIn 0.4s ease-in forwards;  
-    }  
-  
-    .step.active {  
-      display: block;  
-    }  
-  
-    @keyframes fadeIn {  
-      from { opacity: 0; transform: translateY(6px); }  
-      to { opacity: 1; transform: translateY(0); }  
-    }  
-  
-    /* Typography */  
-    .main-title {  
-      font-size: 2.2rem;  
-      font-weight: 800;  
-      color: #9c274b;  
-      margin-bottom: 4px;  
-      letter-spacing: -0.5px;  
-    }  
-  
-    .sub-title {  
-      font-size: 1.25rem;  
-      font-weight: 700;  
-      color: #a83256;  
-      margin-bottom: 24px;  
-      display: flex;  
-      justify-content: center;  
-      align-items: center;  
-      gap: 8px;  
-    }  
-  
-    /* Rectangular styled buttons */  
-    .btn-container {  
-      display: flex;  
-      justify-content: center;  
-      align-items: center;  
-      gap: 24px;  
-      min-height: 80px;  
-      position: relative;  
-    }  
-  
-    .btn {  
-      min-width: 135px;  
-      padding: 12px 28px;  
-      font-size: 1.05rem;  
-      font-weight: 700;  
-      border-radius: 6px;  
-      cursor: pointer;  
-      border: none;  
-      display: inline-flex;  
-      align-items: center;  
-      justify-content: center;  
-      gap: 8px;  
-      transition: all 0.2s ease;  
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);  
-      font-family: inherit;  
-    }  
-  
-    #btn-yes, .btn-primary {  
-      background: #e85d75;  
-      color: #ffffff;  
-    }  
-  
-    #btn-yes:hover, .btn-primary:hover {  
-      background: #df4d67;  
-      transform: scale(1.03);  
-    }  
-  
-    /* Runaway button */  
-    #btn-no {  
-      background: #adc5cf;  
-      color: #ffffff;  
-      position: relative;  
-      transition: transform 0.15s ease-out;  
-      user-select: none;  
-    }  
-  
-    /* =========================================================  
-       TWO COLUMNS: SELECT DATE & SELECT TIME  
-    ========================================================= */  
-    .columns-row {  
-      display: flex;  
-      gap: 16px;  
-      justify-content: center;  
-      align-items: flex-start;  
-      margin: 0 auto 24px;  
-      max-width: 580px;  
-    }  
-  
-    .picker-column {  
-      flex: 1;  
-      position: relative;  
-    }  
-  
-    .picker-trigger-box {  
-      background: #ffffff;  
-      border: 2px solid #ecd1d8;  
-      border-radius: 14px;  
-      padding: 14px 16px;  
-      cursor: pointer;  
-      text-align: left;  
-      transition: all 0.2s ease;  
-      box-shadow: 0 4px 12px rgba(232, 93, 117, 0.06);  
-    }  
-  
-    .picker-trigger-box:hover {  
-      border-color: #e85d75;  
-      transform: translateY(-2px);  
-      box-shadow: 0 6px 16px rgba(232, 93, 117, 0.14);  
-    }  
-  
-    .picker-trigger-box.active {  
-      border-color: #e85d75;  
-      box-shadow: 0 0 0 3px rgba(232, 93, 117, 0.2);  
-    }  
-  
-    .picker-label {  
-      font-size: 0.78rem;  
-      font-weight: 700;  
-      color: #b57a8a;  
-      text-transform: uppercase;  
-      letter-spacing: 0.8px;  
-      margin-bottom: 4px;  
-    }  
-  
-    .picker-value {  
-      font-size: 0.95rem;  
-      font-weight: 800;  
-      color: #4a4446;  
-      display: flex;  
-      align-items: center;  
-      justify-content: space-between;  
-    }  
-  
-    /* Popover Container */  
-    .popover-card {  
-      display: none;  
-      position: absolute;  
-      top: calc(100% + 8px);  
-      left: 0;  
-      right: 0;  
-      z-index: 100;  
-      background: #ffffff;  
-      border: 2px solid #f9d8df;  
-      border-radius: 18px;  
-      padding: 14px;  
-      box-shadow: 0 12px 28px rgba(232, 93, 117, 0.18);  
-      animation: popIn 0.25s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards;  
-    }  
-  
-    .popover-card.show {  
-      display: block;  
-    }  
-  
-    @keyframes popIn {  
-      from { opacity: 0; transform: scale(0.95) translateY(-6px); }  
-      to { opacity: 1; transform: scale(1) translateY(0); }  
-    }  
-  
-    /* Mini Calendar */  
-    .calendar-header {  
-      display: flex;  
-      justify-content: space-between;  
-      align-items: center;  
-      margin-bottom: 10px;  
-    }  
-  
-    .calendar-header h3 {  
-      font-size: 0.9rem;  
-      font-weight: 800;  
-      color: #9c274b;  
-    }  
-  
-    .cal-nav-btn {  
-      background: #ffe8ec;  
-      border: none;  
-      color: #9c274b;  
-      width: 26px;  
-      height: 26px;  
-      border-radius: 50%;  
-      cursor: pointer;  
-      font-weight: 800;  
-      display: flex;  
-      align-items: center;  
-      justify-content: center;  
-      transition: all 0.2s;  
-    }  
-  
-    .cal-nav-btn:hover {  
-      background: #e85d75;  
-      color: #fff;  
-    }  
-  
-    .cal-weekdays {  
-      display: grid;  
-      grid-template-columns: repeat(7, 1fr);  
-      font-size: 0.7rem;  
-      font-weight: 700;  
-      color: #b57a8a;  
-      margin-bottom: 6px;  
-    }  
-  
-    .cal-days-grid {  
-      display: grid;  
-      grid-template-columns: repeat(7, 1fr);  
-      gap: 3px;  
-    }  
-  
-    .cal-day {  
-      aspect-ratio: 1;  
-      display: flex;  
-      align-items: center;  
-      justify-content: center;  
-      font-size: 0.8rem;  
-      font-weight: 700;  
-      color: #4a4446;  
-      border-radius: 8px;  
-      cursor: pointer;  
-      transition: all 0.15s ease;  
-      background: transparent;  
-      border: none;  
-    }  
-  
-    .cal-day:hover:not(.disabled):not(.selected) {  
-      background: #ffe3e8;  
-      color: #9c274b;  
-    }  
-  
-    .cal-day.selected {  
-      background: #e85d75 !important;  
-      color: #ffffff !important;  
-      box-shadow: 0 4px 8px rgba(232, 93, 117, 0.35);  
-    }  
-  
-    .cal-day.disabled {  
-      color: #e2d2d6;  
-      cursor: not-allowed;  
-    }  
-  
-    .cal-day.empty {  
-      cursor: default;  
-    }  
-  
-    /* Time Slot Popover List */  
-    .time-slot-list {  
-      display: flex;  
-      flex-direction: column;  
-      gap: 6px;  
-      max-height: 195px;  
-      overflow-y: auto;  
-      padding-right: 4px;  
-    }  
-  
-    .time-slot-list::-webkit-scrollbar {  
-      width: 4px;  
-    }  
-    .time-slot-list::-webkit-scrollbar-thumb {  
-      background: #ffd3dc;  
-      border-radius: 4px;  
-    }  
-  
-    .time-slot-chip {  
-      background: #fff8f9;  
-      border: 1.5px solid #ffe1e7;  
-      padding: 8px 12px;  
-      border-radius: 10px;  
-      font-size: 0.85rem;  
-      font-weight: 700;  
-      color: #55484c;  
-      cursor: pointer;  
-      display: flex;  
-      justify-content: space-between;  
-      align-items: center;  
-      transition: all 0.2s ease;  
-      font-family: inherit;  
-    }  
-  
-    .time-slot-chip:hover {  
-      background: #ffe9ee;  
-      border-color: #f7aab9;  
-    }  
-  
-    .time-slot-chip.selected {  
-      background: #e85d75;  
-      color: white;  
-      border-color: #e85d75;  
-      box-shadow: 0 4px 8px rgba(232, 93, 117, 0.25);  
-    }  
-  
-    /* Food Grid */  
-    .food-grid {  
-      display: grid;  
-      grid-template-columns: repeat(2, 1fr);  
-      gap: 14px;  
-      max-width: 440px;  
-      margin: 0 auto 24px;  
-    }  
-  
-    .food-card {  
-      background: #ffffff;  
-      border: 2px solid #ecd1d8;  
-      border-radius: 12px;  
-      overflow: hidden;  
-      cursor: pointer;  
-      padding: 10px;  
-      transition: all 0.2s ease;  
-      display: flex;  
-      flex-direction: column;  
-      align-items: center;  
-    }  
-  
-    .food-card img {  
-      width: 100%;  
-      height: 95px;  
-      object-fit: cover;  
-      border-radius: 8px;  
-      margin-bottom: 6px;  
-    }  
-  
-    .food-card span {  
-      font-weight: 700;  
-      font-size: 0.85rem;  
-      color: #444;  
-    }  
-  
-    .food-card:hover {  
-      transform: translateY(-2px);  
-      box-shadow: 0 6px 12px rgba(232, 93, 117, 0.2);  
-    }  
-  
-    .food-card.selected {  
-      border-color: #e85d75;  
-      background: #fff3f5;  
-    }  
-  
-    /* Final confession box */  
-    .final-container {  
-      max-width: 520px;  
-      margin: 0 auto;  
-    }  
-  
-    .final-icons {  
-      font-size: 2rem;  
-      margin-bottom: 12px;  
-      letter-spacing: 6px;  
-    }  
-  
-    .typewriter-text {  
-      font-size: 1.55rem;  
-      font-weight: 800;  
-      color: #9c274b;  
-      line-height: 1.6;  
-      min-height: 90px;  
-      margin-bottom: 24px;  
-    }  
-  
-    .summary-badge {  
-      display: inline-block;  
-      background: #ffe3e8;  
-      color: #9c274b;  
-      padding: 6px 14px;  
-      border-radius: 6px;  
-      font-size: 0.85rem;  
-      font-weight: 700;  
-      margin: 4px;  
-    }  
-  </style>  </head>  
-<body>    <!-- Floating hearts particle engine -->  <canvas id="heartCanvas"></canvas>
+  <!-- Google Fonts & Canvas Confetti -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@600;700;800&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
-  <div class="card">  <!-- STEP 1: Ask Out -->  
-<div id="step-1" class="step active">  
-  <div class="sticker-container">  
-    <img class="sticker" id="ask-sticker" src="https://media.tenor.com/efbLATiqZqwAAAAi/peach-goma-peach-and-goma.gif" alt="Pleading Bear" />  
-  </div>  
-  <h1 class="main-title">Hey Gorgeous!!!!!</h1>  
-  <p class="sub-title">Do you want us to go for an outing during Durga Puja 🫣?</p>  
-    
-  <div class="btn-container">  
-    <button class="btn" id="btn-yes" onclick="goToStep(2)">Yes 💕</button>  
-    <button class="btn" id="btn-no">No 🤍</button>  
-  </div>  
-</div>  
-
-<!-- STEP 2: Time Selection with Columns that click to open cute pickers -->  
-<div id="step-2" class="step">  
-  <div class="sticker-container">  
-    <img class="sticker" src="https://media.tenor.com/n_kIqX3sRocAAAAi/peach-goma.gif" alt="Excited Dance" />  
-  </div>  
-  <h1 class="main-title">Lesssgoooo! 🎉</h1>  
-  <p class="sub-title">Select date and time for our outing 😁😎</p>  
-
-  <div class="columns-row">  
-    <!-- Column 1: Select Date -->  
-    <div class="picker-column">  
-      <div class="picker-trigger-box" id="date-box" onclick="togglePicker('date')">  
-        <div class="picker-label">Select Date</div>  
-        <div class="picker-value">  
-          <span id="date-label-text">Choose a Day</span>  
-          <span>📅</span>  
-        </div>  
-      </div>  
-
-      <!-- Cute Calendar Popover -->  
-      <div class="popover-card" id="date-popover">  
-        <div class="calendar-header">  
-          <button class="cal-nav-btn" onclick="prevMonth(event)">‹</button>  
-          <h3 id="calendar-month-year">Month Year</h3>  
-          <button class="cal-nav-btn" onclick="nextMonth(event)">›</button>  
-        </div>  
-        <div class="cal-weekdays">  
-          <span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span>  
-        </div>  
-        <div class="cal-days-grid" id="calendar-days"></div>  
-      </div>  
-    </div>  
-
-    <!-- Column 2: Select Time -->  
-    <div class="picker-column">  
-      <div class="picker-trigger-box" id="time-box" onclick="togglePicker('time')">  
-        <div class="picker-label">Select Time</div>  
-        <div class="picker-value">  
-          <span id="time-label-text">Choose a Slot</span>  
-          <span>⏰</span>  
-        </div>  
-      </div>  
-
-      <!-- Cute Time Slots Popover -->  
-      <div class="popover-card" id="time-popover">  
-        <div class="time-slot-list">
-
-  <button class="time-slot-chip"
-          onclick="selectTimeSlot(this, '10:00am - 12:00pm')">
-    <span>10:00am - 12:00pm</span>
-  </button>
-
-  <button class="time-slot-chip"
-          onclick="selectTimeSlot(this, '3:30pm - 5:30pm')">
-    <span>3:30pm - 5:30pm</span>
-  </button>
-
-  <button class="time-slot-chip"
-          onclick="selectTimeSlot(this, '6:30pm - 8:30pm')">
-    <span>6:30pm - 8:30pm</span>
-  </button>
-
-  <button class="time-slot-chip"
-          onclick="selectTimeSlot(this, '8:00pm - 9:00pm')">
-    <span>8:00pm - 9:00pm</span>
-  </button>
-
-  <button class="time-slot-chip"
-          onclick="selectTimeSlot(this, '07:30 PM')">
-    <span>07:30 PM</span>
-  </button>
-
-  <button class="time-slot-chip"
-          onclick="selectTimeSlot(this, '09:00 PM')">
-    <span>09:00 PM</span>
-  </button>
-
-        </div>
-      </div>  
-    </div>  
-  </div>  
-
-  <button class="btn btn-primary" onclick="validateStep2()">Next: What are we eating? 🍕</button>  
-</div>  
-
-<!-- STEP 3: Food Selection -->  
-<div id="step-3" class="step">  
-  <div class="sticker-container">  
-    <img class="sticker" src="https://media.tenor.com/BfAiqM3aWPsAAAAi/peach-and-goma-peach-goma.gif" alt="Hungry Munching" />  
-  </div>  
-  <h1 class="main-title">Time for food! 😋</h1>  
-  <p class="sub-title">What is your belly craving most?</p>  
-
-  <div class="food-grid">  
-    <div class="food-card" onclick="selectFood(this, 'Panipuri')">  
-      <img src="https://static2.tripoto.com/media/filter/tst/img/OgData/1612435364_1612433023_738c6a5732268951acf1193f2dd282db.jpg" alt="Panipuri" />  
-      <span>Panipuri</span>  
-    </div>  
-    <div class="food-card" onclick="selectFood(this, 'Momos')">  
-      <img src="https://images.unsplash.com/photo-1625220194771-7ebdea0b70b9?w=400&q=80" alt="Momos" />  
-      <span>Momos</span>  
-    </div>  
-    <div class="food-card" onclick="selectFood(this, 'Icecream')">  
-      <img src="https://images.unsplash.com/photo-1501443762994-82bd5dace89a?w=400&q=80" alt="Icecream" />  
-      <span>Icecreams</span>  
-    </div>  
-    <div class="food-card" onclick="selectFood(this, 'Samosa')">  
-      <img src="https://images.unsplash.com/photo-1601050690597-df0568f70950?w=400&q=80" alt="Samosa" />  
-      <span>Samosa</span>  
-    </div>  
-  </div>  
-
-  <button class="btn btn-primary" onclick="validateStep3()">Lock It In! 💖</button>  
-</div>  
-
-<!-- STEP 4: Final Reveal -->  
-<div id="step-4" class="step">  
-  <div class="final-container">  
-    <div class="final-icons">🫠 💖</div>  
-    <div class="typewriter-text" id="final-message"></div>  
-    <div id="summary-details" style="margin-bottom: 24px;"></div>  
-    <button class="btn btn-primary" onclick="triggerCelebration()">Send Infinite Love 💕</button>  
-  </div>  
-</div>
-
-  </div>    <script>  
-    /* Rising Floating Hearts Particle Canvas */  
-    const canvas = document.getElementById('heartCanvas');  
-    const ctx = canvas.getContext('2d');  
-    let hearts = [];  
-  
-    function resizeCanvas() {  
-      canvas.width = window.innerWidth;  
-      canvas.height = window.innerHeight;  
-    }  
-    window.addEventListener('resize', resizeCanvas);  
-    resizeCanvas();  
-  
-    function drawHeart(x, y, size, color) {  
-      ctx.save();  
-      ctx.beginPath();  
-      ctx.translate(x, y);  
-      ctx.scale(size / 15, size / 15);  
-      ctx.moveTo(0, 0);  
-      ctx.bezierCurveTo(-10, -10, -15, 5, 0, 15);  
-      ctx.bezierCurveTo(15, 5, 10, -10, 0, 0);  
-      ctx.fillStyle = color;  
-      ctx.fill();  
-      ctx.restore();  
-    }  
-  
-    function createHeart() {  
-      const colors = ['#2e2c2d', '#4a4446', '#d64d68', '#b53852', '#333333'];  
-      hearts.push({  
-        x: Math.random() * canvas.width,  
-        y: canvas.height + 20,  
-        dx: (Math.random() - 0.5) * 1.0,  
-        dy: -(Math.random() * 2.0 + 1.2),  
-        size: Math.random() * 9 + 6,  
-        color: colors[Math.floor(Math.random() * colors.length)]  
-      });  
-    }  
-  
-    function animateHearts() {  
-      ctx.clearRect(0, 0, canvas.width, canvas.height);  
-      if (Math.random() < 0.35) {  
-        createHeart();  
-      }  
-  
-      for (let i = hearts.length - 1; i >= 0; i--) {  
-        const h = hearts[i];  
-        h.x += h.dx;  
-        h.y += h.dy;  
-        drawHeart(h.x, h.y, h.size, h.color);  
-  
-        if (h.y < -30) {  
-          hearts.splice(i, 1);  
-        }  
-      }  
-      requestAnimationFrame(animateHearts);  
-    }  
-    animateHearts();  
-  
-    /* Step Navigation */  
-    function goToStep(stepNumber) {  
-      document.querySelectorAll('.step').forEach(step => step.classList.remove('active'));  
-      const nextStep = document.getElementById(`step-${stepNumber}`);  
-      if (nextStep) nextStep.classList.add('active');  
-    }  
-  
-    /* Cheeky Runaway "No" Button */  
-    const noBtn = document.getElementById('btn-no');  
-    const askSticker = document.getElementById('ask-sticker');  
-  
-    function runaway() {  
-      askSticker.src = "https://media.tenor.com/2s_013mSgU4AAAAi/goma-crying.gif";  
-      const maxDistanceX = window.innerWidth < 450 ? 110 : 180;  
-      const maxDistanceY = 100;  
-      const randomX = (Math.random() - 0.5) * maxDistanceX * 2;  
-      const randomY = (Math.random() - 0.5) * maxDistanceY * 2;  
-      noBtn.style.transform = `translate(${randomX}px, ${randomY}px)`;  
-    }  
-  
-    noBtn.addEventListener('mouseenter', runaway);  
-    noBtn.addEventListener('touchstart', (e) => {  
-      e.preventDefault();  
-      runaway();  
-    });  
-  
-    /* =========================================================  
-       CLICK-TO-OPEN POPOVER LOGIC  
-    ========================================================= */  
-    const dateBox = document.getElementById('date-box');  
-    const timeBox = document.getElementById('time-box');  
-    const datePopover = document.getElementById('date-popover');  
-    const timePopover = document.getElementById('time-popover');  
-  
-    function togglePicker(type) {  
-      if (type === 'date') {  
-        const isShown = datePopover.classList.contains('show');  
-        timePopover.classList.remove('show');  
-        timeBox.classList.remove('active');  
-          
-        if (isShown) {  
-          datePopover.classList.remove('show');  
-          dateBox.classList.remove('active');  
-        } else {  
-          datePopover.classList.add('show');  
-          dateBox.classList.add('active');  
-        }    
-        } else if (type === 'time') {
-    const isShown = timePopover.classList.contains('show');
-
-    datePopover.classList.remove('show');
-    dateBox.classList.remove('active');
-
-    if (isShown) {
-        timePopover.classList.remove('show');
-        timeBox.classList.remove('active');
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
-      } else if (type === 'time') {
-    const isShown = timePopover.classList.contains('show');
 
-    datePopover.classList.remove('show');
-    dateBox.classList.remove('active');
+    body {
+      min-height: 100vh;
+      font-family: 'Quicksand', sans-serif;
+      background: #fbf8f8;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow-x: hidden;
+      position: relative;
+      padding: 20px;
+    }
 
-    if (isShown) {
-        // Close time picker
+    /* Floating rising hearts canvas */
+    #heartCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Clean minimal screen container */
+    .card {
+      background: transparent;
+      width: 100%;
+      max-width: 680px;
+      text-align: center;
+      position: relative;
+      z-index: 10;
+    }
+
+    /* Sticker container */
+    .sticker-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0 auto 14px;
+    }
+
+    .sticker {
+      width: 120px;
+      height: 120px;
+      object-fit: contain;
+      filter: drop-shadow(0 4px 10px rgba(255, 77, 109, 0.2));
+      animation: bounceSoft 2.4s ease-in-out infinite;
+      display: block;
+    }
+
+    @keyframes bounceSoft {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-7px); }
+    }
+
+    /* Step display transition */
+    .step {
+      display: none;
+      animation: fadeIn 0.4s ease-in forwards;
+    }
+
+    .step.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Typography */
+    .main-title {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: #9c274b;
+      margin-bottom: 6px;
+      letter-spacing: -0.5px;
+    }
+
+    .sub-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #a83256;
+      margin-bottom: 24px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Rectangular styled buttons */
+    .btn-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 24px;
+      min-height: 80px;
+      position: relative;
+    }
+
+    .btn {
+      min-width: 135px;
+      padding: 12px 28px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      border-radius: 8px;
+      cursor: pointer;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+      font-family: inherit;
+    }
+
+    #btn-yes, .btn-primary {
+      background: #e85d75;
+      color: #ffffff;
+    }
+
+    #btn-yes:hover, .btn-primary:hover {
+      background: #df4d67;
+      transform: scale(1.03);
+    }
+
+    /* Runaway button */
+    #btn-no {
+      background: #adc5cf;
+      color: #ffffff;
+      position: relative;
+      transition: transform 0.2s ease-out;
+      user-select: none;
+      touch-action: none;
+    }
+
+    /* =========================================================
+       TWO COLUMNS: SELECT DATE & SELECT TIME
+    ========================================================= */
+    .columns-row {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      align-items: flex-start;
+      margin: 0 auto 24px;
+      max-width: 580px;
+      position: relative;
+      z-index: 20;
+    }
+
+    @media (max-width: 500px) {
+      .columns-row {
+        flex-direction: column;
+      }
+      .picker-column {
+        width: 100%;
+      }
+    }
+
+    .picker-column {
+      flex: 1;
+      position: relative;
+    }
+
+    .picker-trigger-box {
+      background: #ffffff;
+      border: 2px solid #ecd1d8;
+      border-radius: 14px;
+      padding: 14px 16px;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 12px rgba(232, 93, 117, 0.06);
+    }
+
+    .picker-trigger-box:hover {
+      border-color: #e85d75;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(232, 93, 117, 0.14);
+    }
+
+    .picker-trigger-box.active {
+      border-color: #e85d75;
+      box-shadow: 0 0 0 3px rgba(232, 93, 117, 0.2);
+    }
+
+    .picker-label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #b57a8a;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 4px;
+    }
+
+    .picker-value {
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: #4a4446;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* Popover Container */
+    .popover-card {
+      display: none;
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      background: #ffffff;
+      border: 2px solid #f9d8df;
+      border-radius: 18px;
+      padding: 14px;
+      box-shadow: 0 12px 28px rgba(232, 93, 117, 0.18);
+      animation: popIn 0.25s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards;
+    }
+
+    .popover-card.show {
+      display: block;
+    }
+
+    @keyframes popIn {
+      from { opacity: 0; transform: scale(0.95) translateY(-6px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    /* Mini Calendar */
+    .calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .calendar-header h3 {
+      font-size: 0.9rem;
+      font-weight: 800;
+      color: #9c274b;
+    }
+
+    .cal-nav-btn {
+      background: #ffe8ec;
+      border: none;
+      color: #9c274b;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .cal-nav-btn:hover {
+      background: #e85d75;
+      color: #fff;
+    }
+
+    .cal-weekdays {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: #b57a8a;
+      margin-bottom: 6px;
+    }
+
+    .cal-days-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 3px;
+    }
+
+    .cal-day {
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #4a4446;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      background: transparent;
+      border: none;
+    }
+
+    .cal-day:hover:not(.disabled):not(.selected) {
+      background: #ffe3e8;
+      color: #9c274b;
+    }
+
+    .cal-day.selected {
+      background: #e85d75 !important;
+      color: #ffffff !important;
+      box-shadow: 0 4px 8px rgba(232, 93, 117, 0.35);
+    }
+
+    .cal-day.disabled {
+      color: #e2d2d6;
+      cursor: not-allowed;
+    }
+
+    .cal-day.empty {
+      cursor: default;
+    }
+
+    /* Time Slot Popover List */
+    .time-slot-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      max-height: 195px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .time-slot-list::-webkit-scrollbar {
+      width: 4px;
+    }
+    .time-slot-list::-webkit-scrollbar-thumb {
+      background: #ffd3dc;
+      border-radius: 4px;
+    }
+
+    .time-slot-chip {
+      background: #fff8f9;
+      border: 1.5px solid #ffe1e7;
+      padding: 9px 12px;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #55484c;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+
+    .time-slot-chip:hover {
+      background: #ffe9ee;
+      border-color: #f7aab9;
+    }
+
+    .time-slot-chip.selected {
+      background: #e85d75;
+      color: white;
+      border-color: #e85d75;
+      box-shadow: 0 4px 8px rgba(232, 93, 117, 0.25);
+    }
+
+    /* Food Grid */
+    .food-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      max-width: 440px;
+      margin: 0 auto 24px;
+    }
+
+    .food-card {
+      background: #ffffff;
+      border: 2px solid #ecd1d8;
+      border-radius: 12px;
+      overflow: hidden;
+      cursor: pointer;
+      padding: 10px;
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .food-card img {
+      width: 100%;
+      height: 95px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 6px;
+    }
+
+    .food-card span {
+      font-weight: 700;
+      font-size: 0.88rem;
+      color: #444;
+    }
+
+    .food-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(232, 93, 117, 0.2);
+    }
+
+    .food-card.selected {
+      border-color: #e85d75;
+      background: #fff3f5;
+    }
+
+    /* Final confession box */
+    .final-container {
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    .final-icons {
+      font-size: 2.2rem;
+      margin-bottom: 12px;
+      letter-spacing: 6px;
+    }
+
+    .typewriter-text {
+      font-size: 1.45rem;
+      font-weight: 800;
+      color: #9c274b;
+      line-height: 1.6;
+      min-height: 90px;
+      margin-bottom: 24px;
+    }
+
+    .summary-badge {
+      display: inline-block;
+      background: #ffe3e8;
+      color: #9c274b;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      margin: 4px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Floating hearts particle engine -->
+  <canvas id="heartCanvas"></canvas>
+
+  <div class="card">
+
+    <!-- STEP 1: Ask Out -->
+    <div id="step-1" class="step active">
+      <div class="sticker-container">
+        <img class="sticker" id="ask-sticker" src="https://media.tenor.com/efbLATiqZqwAAAAi/peach-goma-peach-and-goma.gif" alt="Pleading Bear" />
+      </div>
+      <h1 class="main-title">Hey Gorgeous!!!!!</h1>
+      <p class="sub-title">Do you want us to go for an outing during Durga Puja 🫣?</p>
+      
+      <div class="btn-container">
+        <button type="button" class="btn" id="btn-yes" onclick="goToStep(2)">Yes 💕</button>
+        <button type="button" class="btn" id="btn-no">No 🤍</button>
+      </div>
+    </div>
+
+    <!-- STEP 2: Date & Time Picker -->
+    <div id="step-2" class="step">
+      <div class="sticker-container">
+        <img class="sticker" src="https://media.tenor.com/n_kIqX3sRocAAAAi/peach-goma.gif" alt="Excited Dance" />
+      </div>
+      <h1 class="main-title">Lesssgoooo! 🎉</h1>
+      <p class="sub-title">Select date and time for our outing 😁😎</p>
+
+      <div class="columns-row">
+        <!-- Column 1: Select Date -->
+        <div class="picker-column">
+          <div class="picker-trigger-box" id="date-box" onclick="togglePicker('date')">
+            <div class="picker-label">Select Date</div>
+            <div class="picker-value">
+              <span id="date-label-text">Choose a Day</span>
+              <span>📅</span>
+            </div>
+          </div>
+
+          <!-- Cute Calendar Popover -->
+          <div class="popover-card" id="date-popover">
+            <div class="calendar-header">
+              <button type="button" class="cal-nav-btn" onclick="prevMonth(event)">‹</button>
+              <h3 id="calendar-month-year">Month Year</h3>
+              <button type="button" class="cal-nav-btn" onclick="nextMonth(event)">›</button>
+            </div>
+            <div class="cal-weekdays">
+              <span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span>
+            </div>
+            <div class="cal-days-grid" id="calendar-days"></div>
+          </div>
+        </div>
+
+        <!-- Column 2: Select Time -->
+        <div class="picker-column">
+          <div class="picker-trigger-box" id="time-box" onclick="togglePicker('time')">
+            <div class="picker-label">Select Time</div>
+            <div class="picker-value">
+              <span id="time-label-text">Choose a Slot</span>
+              <span>⏰</span>
+            </div>
+          </div>
+
+          <!-- Cute Time Slots Popover -->
+          <div class="popover-card" id="time-popover">
+            <div class="time-slot-list">
+              <button type="button" class="time-slot-chip" onclick="selectTimeSlot(this, '10:00 AM - 12:00 PM')"><span>10:00 AM - 12:00 PM</span></button>
+              <button type="button" class="time-slot-chip" onclick="selectTimeSlot(this, '03:30 PM - 05:30 PM')"><span>03:30 PM - 05:30 PM</span></button>
+              <button type="button" class="time-slot-chip" onclick="selectTimeSlot(this, '06:30 PM - 08:30 PM')"><span>06:30 PM - 08:30 PM</span></button>
+              <button type="button" class="time-slot-chip" onclick="selectTimeSlot(this, '08:00 PM - 09:00 PM')"><span>08:00 PM - 09:00 PM</span></button>
+              <button type="button" class="time-slot-chip" onclick="selectTimeSlot(this, '07:30 PM')"><span>07:30 PM</span></button>
+              <button type="button" class="time-slot-chip" onclick="selectTimeSlot(this, '09:00 PM')"><span>09:00 PM</span></button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <button type="button" class="btn btn-primary" onclick="validateStep2()">Next: What are we eating? 🍕</button>
+    </div>
+
+    <!-- STEP 3: Food Selection -->
+    <div id="step-3" class="step">
+      <div class="sticker-container">
+        <img class="sticker" src="https://media.tenor.com/BfAiqM3aWPsAAAAi/peach-and-goma-peach-goma.gif" alt="Hungry Munching" />
+      </div>
+      <h1 class="main-title">Time for food! 😋</h1>
+      <p class="sub-title">What is your belly craving most?</p>
+
+      <div class="food-grid">
+        <!-- Replaced with dependable Unsplash Panipuri image -->
+        <div class="food-card" onclick="selectFood(this, 'Panipuri')">
+          <img src="https://static2.tripoto.com/media/filter/tst/img/OgData/1612435364_1612433023_738c6a5732268951acf1193f2dd282db.jpg" alt="Panipuri" />
+          <span>Panipuri</span>
+        </div>
+        <div class="food-card" onclick="selectFood(this, 'Momos')">
+          <img src="https://images.unsplash.com/photo-1625220194771-7ebdea0b70b9?w=400&q=80" alt="Momos" />
+          <span>Momos</span>
+        </div>
+        <div class="food-card" onclick="selectFood(this, 'Icecream')">
+          <img src="https://images.unsplash.com/photo-1501443762994-82bd5dace89a?w=400&q=80" alt="Icecream" />
+          <span>Icecreams</span>
+        </div>
+        <div class="food-card" onclick="selectFood(this, 'Samosa')">
+          <img src="https://images.unsplash.com/photo-1601050690597-df0568f70950?w=400&q=80" alt="Samosa" />
+          <span>Samosa</span>
+        </div>
+      </div>
+
+      <button type="button" class="btn btn-primary" onclick="validateStep3()">Lock It In! 💖</button>
+    </div>
+
+    <!-- STEP 4: Final Reveal -->
+    <div id="step-4" class="step">
+      <div class="final-container">
+        <div class="final-icons">🫠 💖</div>
+        <div class="typewriter-text" id="final-message"></div>
+        <div id="summary-details" style="margin-bottom: 24px;"></div>
+        <button type="button" class="btn btn-primary" onclick="triggerCelebration()">Send Infinite Love 💕</button>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    /* Rising Floating Hearts Particle Canvas */
+    const canvas = document.getElementById('heartCanvas');
+    const ctx = canvas.getContext('2d');
+    let hearts = [];
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    function drawHeart(x, y, size, color) {
+      ctx.save();
+      ctx.beginPath();
+      ctx.translate(x, y);
+      ctx.scale(size / 15, size / 15);
+      ctx.moveTo(0, 0);
+      ctx.bezierCurveTo(-10, -10, -15, 5, 0, 15);
+      ctx.bezierCurveTo(15, 5, 10, -10, 0, 0);
+      ctx.fillStyle = color;
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function createHeart() {
+      const colors = ['#f8b4b4', '#ffccd5', '#d64d68', '#b53852', '#ffd3dc'];
+      hearts.push({
+        x: Math.random() * canvas.width,
+        y: canvas.height + 20,
+        dx: (Math.random() - 0.5) * 1.0,
+        dy: -(Math.random() * 2.0 + 1.2),
+        size: Math.random() * 9 + 6,
+        color: colors[Math.floor(Math.random() * colors.length)]
+      });
+    }
+
+    function animateHearts() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      if (Math.random() < 0.35) {
+        createHeart();
+      }
+
+      for (let i = hearts.length - 1; i >= 0; i--) {
+        const h = hearts[i];
+        h.x += h.dx;
+        h.y += h.dy;
+        drawHeart(h.x, h.y, h.size, h.color);
+
+        if (h.y < -30) {
+          hearts.splice(i, 1);
+        }
+      }
+      requestAnimationFrame(animateHearts);
+    }
+    animateHearts();
+
+    /* Step Navigation */
+    function goToStep(stepNumber) {
+      document.querySelectorAll('.step').forEach(step => step.classList.remove('active'));
+      const nextStep = document.getElementById(`step-${stepNumber}`);
+      if (nextStep) nextStep.classList.add('active');
+    }
+
+    /* Cheeky Runaway "No" Button with screen bounds check */
+    const noBtn = document.getElementById('btn-no');
+    const askSticker = document.getElementById('ask-sticker');
+
+    function runaway() {
+      askSticker.src = "https://media.tenor.com/2s_013mSgU4AAAAi/goma-crying.gif";
+      const bounds = noBtn.parentElement.getBoundingClientRect();
+      const maxX = Math.min(140, window.innerWidth / 3);
+      const maxY = 60;
+      
+      const randomX = (Math.random() - 0.5) * maxX * 2;
+      const randomY = (Math.random() - 0.5) * maxY * 2;
+      noBtn.style.transform = `translate(${randomX}px,${randomY}px)`;
+    }
+
+    noBtn.addEventListener('mouseenter', runaway);
+    noBtn.addEventListener('click', runaway);
+    noBtn.addEventListener('touchstart', (e) => {
+      runaway();
+    });
+
+    /* =========================================================
+       CLICK-TO-OPEN POPOVER LOGIC
+    ========================================================= */
+    const dateBox = document.getElementById('date-box');
+    const timeBox = document.getElementById('time-box');
+    const datePopover = document.getElementById('date-popover');
+    const timePopover = document.getElementById('time-popover');
+
+    function togglePicker(type) {
+      if (type === 'date') {
+        const isShown = datePopover.classList.contains('show');
         timePopover.classList.remove('show');
         timeBox.classList.remove('active');
-    } else {
-        // Open time picker
-        timePopover.classList.add('show');
-        timeBox.classList.add('active');
+        
+        if (isShown) {
+          datePopover.classList.remove('show');
+          dateBox.classList.remove('active');
+        } else {
+          datePopover.classList.add('show');
+          dateBox.classList.add('active');
+        }
+      } else if (type === 'time') {
+        const isShown = timePopover.classList.contains('show');
+        datePopover.classList.remove('show');
+        dateBox.classList.remove('active');
+
+        if (isShown) {
+          timePopover.classList.remove('show');
+          timeBox.classList.remove('active');
+        } else {
+          timePopover.classList.add('show');
+          timeBox.classList.add('active');
         }
       }
     }
 
-    // Close when clicking outside
+    // Close popover when clicking outside
     document.addEventListener('click', (e) => {
       if (!e.target.closest('.picker-column')) {
         datePopover.classList.remove('show');
@@ -731,12 +720,12 @@
     let chosenDate = '';
     let chosenTime = '';
 
-    const monthNames = ["January", "February", "March", "April", "May", "June","July", "August", "September", "October", "November", "December"];
+    const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
     function renderCalendar() {
       const year = currentCalDate.getFullYear();
       const month = currentCalDate.getMonth();
-      document.getElementById('calendar-month-year').textContent = `${monthNames[month]} ${year}`;
+      document.getElementById('calendar-month-year').textContent = `${monthNames[month]}${year}`;
 
       const firstDay = new Date(year, month, 1).getDay();
       const daysInMonth = new Date(year, month + 1, 0).getDate();
@@ -756,6 +745,7 @@
       // Populate day buttons
       for (let d = 1; d <= daysInMonth; d++) {
         const dayBtn = document.createElement('button');
+        dayBtn.type = 'button';
         dayBtn.className = 'cal-day';
         dayBtn.textContent = d;
 
@@ -763,7 +753,7 @@
         if (checkDate < today) {
           dayBtn.classList.add('disabled');
         } else {
-          const dateStr = `${monthNames[month].slice(0,3)} ${d}, ${year}`;
+          const dateStr = `${monthNames[month].slice(0,3)} ${d},${year}`;
           if (chosenDate === dateStr) {
             dayBtn.classList.add('selected');
           }
@@ -773,7 +763,6 @@
             dayBtn.classList.add('selected');
             chosenDate = dateStr;
             document.getElementById('date-label-text').textContent = dateStr;
-            // Auto close popover after picking date
             setTimeout(() => {
               datePopover.classList.remove('show');
               dateBox.classList.remove('active');
@@ -805,7 +794,6 @@
       chosenTime = time;
       document.getElementById('time-label-text').textContent = time;
 
-      // Auto close popover after picking time
       setTimeout(() => {
         timePopover.classList.remove('show');
         timeBox.classList.remove('active');
@@ -852,12 +840,9 @@
       typewriterReveal();
     }
 
-    /* =========================================================
-       STEP 4 TYPEWRITER EFFECT 
-    ========================================================= */
+    /* Step 4 Typewriter Effect */
     function typewriterReveal() {
-      const text = `Yipppeeeee.....Happy for us glad
-      you said YES. Love you sooooo muchhhhh😝😝😝😝`;
+      const text = "Yipppeeeee! So happy you said YES! Love you sooooo much! 😝💖";
 
       const target = document.getElementById('final-message');
       target.innerHTML = "";
@@ -865,10 +850,9 @@
 
       function type() {
         if (index < text.length) {
-          const char = text.charAt(index);
-          target.innerHTML += (char === '\n') ? '<br/>' : char;
+          target.innerHTML += text.charAt(index);
           index++;
-          setTimeout(type, 50);
+          setTimeout(type, 45);
         }
       }
       type();
@@ -877,8 +861,8 @@
     /* Confetti Burst */
     function triggerCelebration() {
       confetti({
-        particleCount: 90,
-        spread: 70,
+        particleCount: 110,
+        spread: 80,
         origin: { y: 0.6 },
         colors: ['#e85d75', '#adc5cf', '#ffccd5', '#9c274b']
       });
